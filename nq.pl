@@ -1,31 +1,24 @@
 :- use_module(library(clpfd)).
 
-rainhas(N, L) :-
-  length(L, N),
-   L ins 1..N, %domain(L, 1, N),
-   salvo(L),
-   labeling([], L),
-   nl,
-   tabuleiro(L, N, L).
+rainhas([], []). % Predicado para caso geral usando CLP(FD)
+rainhas(A, B) :-
+  append([], A, Bcp),
+  salvo(Bcp) -> (
+    length(A, X),
+    write('Posições Válidas!'),
+    nl,
+    tabuleiro(A, X, A)
+  ); (
+    length(A, X),
+    write('Posições Inválidas!'),
+    nl, nl,
+    tabuleiro(A, X, A)
+  ) -> (
+    write("Possíveis Soluções: "),
+    procura_solucao(X, B, B)
+  ).
 
-salvo([]).
-salvo([X|Xs]) :-
-  salvo_entre(X, Xs, 1),
-  salvo(Xs).
-
-salvo_entre(X, [], M).
-salvo_entre(X, [Y|Ys], M) :-
-  teste_ataque(X, Y, M),
-  M1 is M+1,
-  salvo_entre(X, Ys, M1).
-
-
-teste_ataque(X, Y, N) :-
-  X #\= Y,
-  X+N #\= Y,
-  X-N #\= Y.
-
-rainhas([]).
+rainhas([]). % Predicado para 10 rainhas
 rainhas(S) :-
   % rainhas(10, S), rainhas(10, Q).
   salvo(S) ->
@@ -39,6 +32,30 @@ rainhas(S) :-
     nl,
     tabuleiro(S, 10, S)
   ).
+
+procura_solucao(N, L, [H|T]) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem
+  length(L, N),
+   L ins 1..N, %domain(L, 1, N),
+   salvo(L),
+   labeling([], L).
+  %  nl,
+  %  tabuleiro(L, N, L).
+
+salvo([]).
+salvo([X|Xs]) :-
+  salvo_entre(X, Xs, 1),
+  salvo(Xs).
+
+salvo_entre(X, [], M).
+salvo_entre(X, [Y|Ys], M) :-
+  teste_ataque(X, Y, M),
+  M1 is M+1,
+  salvo_entre(X, Ys, M1).
+
+teste_ataque(X, Y, N) :- % Verifica o conflito entre as rainhas na mesma coluna e nas Diagonais
+  X #\= Y, % Coluna
+  X+N #\= Y, % Diagonal
+  X-N #\= Y. % Diagonal
 
 tabuleiro([], _, []).
 tabuleiro([L|List], Number, Bcp):-
@@ -54,7 +71,8 @@ tabuleiro([L|List], Number, Bcp):-
     imprime_comeco(L, Number, 1),
     nl,
     tabuleiro(List, Number, Bcp)
-  ).
+  );
+  true.
 
 imprime_comeco(Num, Control, Type):- % Função que imprime uma fileira do tabuleiro de Xadrez até a posição da Rainha
   decx(Var, Num),
@@ -73,30 +91,30 @@ imprime_fim(Num, Control):- % Função que imprime uma fileira do tabuleiro de X
   incx(Var, Num),
   foreach(between(Var, Control, _), write(' - ')).
 
-
-incx(X1, X):-
+incx(X1, X):- % Predicado para incrementar uma variável
   X1 is X+1.
 
-decx(X1, X):-
+decx(X1, X):- % Predicado para decrementar uma variável
   X1 is X-1.
 
-reverse([],Z,Z).
-reverse([H|T],Z,Acc):-
-  reverse(T,Z,[H|Acc]).
+reverse([], R, R). % Predicado para inverter uma lista uma variável
+reverse([H|T], R, Acc):-
+  reverse(T, R, [H|Acc]).
+
+
+
+
 
 /*
 TESTES:
-?- rainhas(1, Rainhas).
-?- rainhas(2, Rainhas).
-?- rainhas(3, Rainhas).
-?- rainhas(4, Rainhas).
-?- rainhas(5, Rainhas).
-?- rainhas(6, Rainhas).
-?- rainhas(7, Rainhas).
-?- rainhas(8, Rainhas).
-?- rainhas(9, Rainhas).
-?- rainhas(10, Rainhas).
 
+CASO GERAL:
+?- rainhas([1,2,3,4], Rainhas).
+?- rainhas([1,4,2,5,3], Rainhas).
+?- rainhas([2,4,6,1,3,5], Rainhas).
+?- rainhas([1,6,2,3,5,4], Rainhas).
+
+10-Rainhas:
 ?- rainhas([5,7,10,6,3,1,8,4,2,9]).
 ?- rainhas([5,7,10,6,3,1,8,4,2,8]).
 ?- rainhas([5,7,10,6,10,1,8,4,2,9]).
