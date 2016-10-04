@@ -3,10 +3,10 @@
 rainhas(N, L) :-
   length(L, N),
    L ins 1..N, %domain(L, 1, N),
-  salvo(L),
-  labeling([], L),
-  nl,
-  tabuleiro(L, N, S, N).
+   salvo(L),
+   labeling([], L),
+   nl,
+   tabuleiro(L, N, L).
 
 salvo([]).
 salvo([X|Xs]) :-
@@ -32,32 +32,29 @@ rainhas(S) :-
   (
     write('Posições Válidas!'),
     nl,
-    tabuleiro(S, 10, S, 1)
+    tabuleiro(S, 10, S)
   );
   (
     write('Posições Inválidas!'),
     nl,
-    tabuleiro(S, 10, S, 1)
+    tabuleiro(S, 10, S)
   ).
 
-tabuleiro([], _, [], _).
-tabuleiro([L|List], Number, Bcp, Count):-
+tabuleiro([], _, []).
+tabuleiro([L|List], Number, Bcp):-
    append(R, List, Bcp),
    reverse(R, Reverse, []), % Reverse contém a lista Complemento de List de trás para frente
    [H|T] = Reverse, % H é o primeiro elemento de Reverse, e T é o resto da lista
    salvo_entre(L, List, 1), salvo_entre(H, T, 1) -> ( % Verifica Conflitos da coluna pra cima e da coluna pra baixo
       imprime_comeco(L, Number, 0),
       nl,
-      M is Count + 1,
-      tabuleiro(List, Number, Bcp, M)
+      tabuleiro(List, Number, Bcp)
   );
   (
     imprime_comeco(L, Number, 1),
     nl,
-    M is Count + 1,
-    tabuleiro(List, Number, Bcp, M)
+    tabuleiro(List, Number, Bcp)
   ).
-
 
 imprime_comeco(Num, Control, Type):- % Função que imprime uma fileira do tabuleiro de Xadrez até a posição da Rainha
   decx(Var, Num),
@@ -84,7 +81,8 @@ decx(X1, X):-
   X1 is X-1.
 
 reverse([],Z,Z).
-reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
+reverse([H|T],Z,Acc):-
+  reverse(T,Z,[H|Acc]).
 
 /*
 TESTES:
