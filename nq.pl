@@ -43,13 +43,13 @@ rainhas(S) :-
 tabuleiro([], _, [], _).
 tabuleiro([L|List], Number, Bcp, Count):-
    append(R, List, Bcp),
-   reverse(R, Reverse, []),
-   [H|T] = Reverse,
-  salvo_entre(L, List, 1), salvo_entre(H, T, 1) -> ( %Verifica Conflitos da coluna pra cima e da coluna pra baixo
-    imprime_comeco(L, Number, 0),
-    nl,
-    M is Count + 1,
-    tabuleiro(List, Number, Bcp, M)
+   reverse(R, Reverse, []), % Reverse contém a lista Complemento de List de trás para frente
+   [H|T] = Reverse, % H é o primeiro elemento de Reverse, e T é o resto da lista
+   salvo_entre(L, List, 1), salvo_entre(H, T, 1) -> ( % Verifica Conflitos da coluna pra cima e da coluna pra baixo
+      imprime_comeco(L, Number, 0),
+      nl,
+      M is Count + 1,
+      tabuleiro(List, Number, Bcp, M)
   );
   (
     imprime_comeco(L, Number, 1),
@@ -59,7 +59,7 @@ tabuleiro([L|List], Number, Bcp, Count):-
   ).
 
 
-imprime_comeco(Num, Control, Type):-
+imprime_comeco(Num, Control, Type):- % Função que imprime uma fileira do tabuleiro de Xadrez até a posição da Rainha
   decx(Var, Num),
   foreach(between(1, Var, _), write(' - ')),
   Type =:= 0 ->
@@ -72,7 +72,7 @@ imprime_comeco(Num, Control, Type):-
     imprime_fim(Num, Control)
   ).
 
-imprime_fim(Num, Control):-
+imprime_fim(Num, Control):- % Função que imprime uma fileira do tabuleiro de Xadrez da posição da Rainha até a posição final
   incx(Var, Num),
   foreach(between(Var, Control, _), write(' - ')).
 
