@@ -3,43 +3,57 @@
 rainhas([], []). % Predicado para caso geral usando CLP(FD)
 rainhas(A, B) :-
   append([], A, Bcp),
-  salvo(Bcp) -> (
-    length(A, X),
-    write('Posições Válidas!'),
-    nl,
-    tabuleiro(A, X, A)
-  ); (
-    length(A, X),
-    write('Posições Inválidas!'),
-    nl, nl,
-    tabuleiro(A, X, A)
-  ) -> (
-    write("Possíveis Soluções: "),
-    procura_solucao(X, B, B)
-  ).
+  length(A, T),
+  foreach(member(X, A), X =< T) -> % Testa se todas as posições passadas por parâmtro respeita o tamanho do tabuleiro.
+  (
+    salvo(Bcp) -> (
+      length(A, X),
+      write('Posições Válidas!'),
+      nl,
+      tabuleiro(A, X, A)
+    ); (
+      length(A, X),
+      write('Posições Inválidas!'),
+      nl, nl,
+      tabuleiro(A, X, A)
+    ) -> (
+      write("Possíveis Soluções: "),
+      procura_solucao(X, B, B)
+    )
+  );
+  write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(A, T), write(T), nl.
 
 rainhas([]). % Predicado para 10 rainhas
 rainhas(S) :-
-  % rainhas(10, S), rainhas(10, Q).
-  salvo(S) ->
+  length(S, T),
+  foreach(member(X, S), X =< T) -> % Testa se todas as posições passadas por parâmtro respeita o tamanho do tabuleiro.
   (
-    write('Posições Válidas!'),
-    nl,
-    tabuleiro(S, 10, S)
+    salvo(S) ->
+    (
+      write('Posições Válidas!'),
+      nl,
+      tabuleiro(S, 10, S)
+    );
+    (
+      write('Posições Inválidas!'),
+      nl,
+      tabuleiro(S, 10, S)
+    )
   );
-  (
-    write('Posições Inválidas!'),
-    nl,
-    tabuleiro(S, 10, S)
-  ).
+  write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(S, T), write(T), nl.
+
+teste_limite([H|T], X) :- % Predicado que testa se os elementos da lista são menores ou iguais ao tamanho dela
+  % H >= X -> write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), write(X), nl;
+  H =< X,
+  teste_limite(T, X).
 
 procura_solucao(N, L, [H|T]) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem
   length(L, N),
    L ins 1..N, %domain(L, 1, N),
    salvo(L),
-   labeling([], L).
-  %  nl,
-  %  tabuleiro(L, N, L).
+   labeling([], L),
+   nl,
+   tabuleiro(L, N).
 
 salvo([]).
 salvo([X|Xs]) :-
@@ -57,10 +71,10 @@ teste_ataque(X, Y, N) :- % Verifica o conflito entre as rainhas na mesma coluna 
   X+N #\= Y, % Diagonal
   X-N #\= Y. % Diagonal
 
-tabuleiro([], _, []).
+tabuleiro([], _, []). % Predicado utilizado para imprimir o tabuleiro no caso de conflito.
 tabuleiro([L|List], Number, Bcp):-
    append(R, List, Bcp),
-   reverse(R, Reverse, []), % Reverse contém a lista Complemento de List de trás para frente
+   reverso(R, Reverse, []), % Reverse contém a lista Complemento de List de trás para frente
    [H|T] = Reverse, % H é o primeiro elemento de Reverse, e T é o resto da lista
    salvo_entre(L, List, 1), salvo_entre(H, T, 1) -> ( % Verifica Conflitos da coluna pra cima e da coluna pra baixo
       imprime_comeco(L, Number, 0),
@@ -73,6 +87,12 @@ tabuleiro([L|List], Number, Bcp):-
     tabuleiro(List, Number, Bcp)
   );
   true.
+
+tabuleiro([], _). % Predicado utilizado para imprimir o tabuleiro no caso sem conflitos.
+tabuleiro([L|List], Number):-
+  imprime_comeco(L, Number, 0),
+  nl,
+  tabuleiro(List, Number).
 
 imprime_comeco(Num, Control, Type):- % Função que imprime uma fileira do tabuleiro de Xadrez até a posição da Rainha
   decx(Var, Num),
@@ -97,9 +117,9 @@ incx(X1, X):- % Predicado para incrementar uma variável
 decx(X1, X):- % Predicado para decrementar uma variável
   X1 is X-1.
 
-reverse([], R, R). % Predicado para inverter uma lista uma variável
-reverse([H|T], R, Acc):-
-  reverse(T, R, [H|Acc]).
+reverso([], R, R). % Predicado para inverter uma lista uma variável
+reverso([H|T], R, Acc):-
+  reverso(T, R, [H|Acc]).
 
 
 
