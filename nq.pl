@@ -16,7 +16,7 @@ rainhas(A, B) :-
       tabuleiro(A, X, A)
     ) -> (
       nl, write("POSSÍVEIS SOLUÇÕES:"), nl,
-      procura_solucao(X, B, B)
+      procura_solucao(X, B)
     )
   );
   write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(A, T), write(T), nl.
@@ -42,7 +42,7 @@ rainhas(S) :-
   );
   write("Predicado válido somente para 10 rainhas. Você passou como parâmetro uma lista com "), length(S, T), write(T), write(' rainhas!'), nl.
 
-procura_solucao(N, L, [H|T]) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem CLP(FD)
+procura_solucao(N, L) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem CLP(FD)
   length(L, N),
    L ins 1..N, %domain(L, 1, N),
    salvo(L),
@@ -118,9 +118,6 @@ decx(X1, X):- % Predicado para decrementar uma variável
 reverso([], R, R). % Predicado para inverter uma lista uma variável
 reverso([H|T], R, Acc):-
   reverso(T, R, [H|Acc]).
-
-
-
 
 
 /*
