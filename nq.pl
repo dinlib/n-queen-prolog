@@ -1,6 +1,6 @@
 :- use_module(library(clpfd)).
 
-rainhas([], []). % Predicado para caso geral usando CLP(FD)
+rainhas([], []). % Predicado para caso geral
 rainhas(A, B) :-
   append([], A, Bcp),
   length(A, T),
@@ -8,16 +8,14 @@ rainhas(A, B) :-
   (
     salvo(Bcp) -> (
       length(A, X),
-      write('Posições Válidas!'),
-      nl,
+      write('Posições Válidas!'), nl,
       tabuleiro(A, X, A)
     ); (
       length(A, X),
-      write('Posições Inválidas!'),
-      nl, nl,
+      write('Posições Inválidas! (C - Rainha em conflito com outra, R - Rainha sem confilto)'),nl,
       tabuleiro(A, X, A)
     ) -> (
-      write("Possíveis Soluções: "),
+      nl, write("POSSÍVEIS SOLUÇÕES:"), nl,
       procura_solucao(X, B, B)
     )
   );
@@ -26,34 +24,33 @@ rainhas(A, B) :-
 rainhas([]). % Predicado para 10 rainhas
 rainhas(S) :-
   length(S, T),
-  foreach(member(X, S), X =< T) -> % Testa se todas as posições passadas por parâmtro respeita o tamanho do tabuleiro.
+  T = 10 ->
   (
-    salvo(S) ->
+    foreach(member(X, S), X =< T) -> % Testa se todas as posições passadas por parâmtro respeita o tamanho do tabuleiro.
     (
-      write('Posições Válidas!'),
-      nl,
-      tabuleiro(S, 10, S)
+      salvo(S) ->
+      (
+        write('Posições Válidas!'), nl,
+        tabuleiro(S, 10, S)
+      );
+      (
+        write('Posições Inválidas! (C - Rainha em conflito com outra, R - Rainha sem confilto)'),
+        tabuleiro(S, 10, S)
+      )
     );
-    (
-      write('Posições Inválidas!'),
-      nl,
-      tabuleiro(S, 10, S)
-    )
+    write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(S, T), write(T), nl
   );
-  write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(S, T), write(T), nl.
+  write("Predicado válido somente para 10 rainhas. Você passou como parâmetro uma lista com "), length(S, T), write(T), write(' rainhas!'), nl.
 
-teste_limite([H|T], X) :- % Predicado que testa se os elementos da lista são menores ou iguais ao tamanho dela
-  % H >= X -> write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), write(X), nl;
-  H =< X,
-  teste_limite(T, X).
-
-procura_solucao(N, L, [H|T]) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem
+procura_solucao(N, L, [H|T]) :- % Procura solução para o predicado geral quando falha, utilizando a abordagem CLP(FD)
   length(L, N),
    L ins 1..N, %domain(L, 1, N),
    salvo(L),
    labeling([], L),
    nl,
-   tabuleiro(L, N).
+   write('Representação em Tabuleiro:'), nl,
+   tabuleiro(L, N),
+   write('Representação em Lista:').
 
 salvo([]).
 salvo([X|Xs]) :-
@@ -96,6 +93,7 @@ tabuleiro([L|List], Number):-
 
 imprime_comeco(Num, Control, Type):- % Função que imprime uma fileira do tabuleiro de Xadrez até a posição da Rainha
   decx(Var, Num),
+  tab(4),
   foreach(between(1, Var, _), write(' - ')),
   Type =:= 0 ->
   (
@@ -133,10 +131,14 @@ CASO GERAL:
 ?- rainhas([1,4,2,5,3], Rainhas).
 ?- rainhas([2,4,6,1,3,5], Rainhas).
 ?- rainhas([1,6,2,3,5,4], Rainhas).
+?- rainhas([1,6,2,3,5,9], Rainhas).
 
 10-Rainhas:
 ?- rainhas([5,7,10,6,3,1,8,4,2,9]).
 ?- rainhas([5,7,10,6,3,1,8,4,2,8]).
+?- rainhas([5,7,15,6,3,1,8,4,2,8]).
+?- rainhas([5,7,7,6,3,1,8,4,2]).
+?- rainhas([5,7,10,6,3,1,8,4,2,9,1]).
 ?- rainhas([5,7,10,6,10,1,8,4,2,9]).
 ?- rainhas([1,2,3,4,5,6,7,8,9,10]).
 ?- rainhas([10,9,8,7,6,5,4,3,2,1]).
