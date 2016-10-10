@@ -54,7 +54,7 @@ procura_solucao(N, L) :- % Procura solução para o predicado geral quando falha
    tabuleiro(L, N),
    write('Representação em Lista:').
 
-procura_10() :- % Procura solução para o predicado geral quando falha, utilizando a abordagem CLP(FD)
+procura_10() :- % Procura solução para o predicado de 10 rainhas quando falha, utilizando a abordagem CLP(FD)
  length(L, 10),
   L ins 1..10, %domain(L, 1, N),
   salvo(L),
