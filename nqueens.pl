@@ -34,7 +34,7 @@ rainhas(S) :-
         tabuleiro(S, 10, S)
       );
       (
-        write('Posições Inválidas! (C - Rainha em conflito com outra, R - Rainha sem confilto)'),
+        write('Posições Inválidas! (C - Rainha em conflito com outra, R - Rainha sem confilto)'), nl,
         tabuleiro(S, 10, S)
       )
     );
