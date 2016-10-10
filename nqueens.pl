@@ -35,7 +35,9 @@ rainhas(S) :-
       );
       (
         write('Posições Inválidas! (C - Rainha em conflito com outra, R - Rainha sem confilto)'), nl,
-        tabuleiro(S, 10, S)
+        tabuleiro(S, 10, S),
+        nl, write("POSSÍVEIS SOLUÇÕES:"), nl,
+        procura_10()
       )
     );
     write("As posições das Rainhas no tabuleiro devem ser menor ou igual a "), length(S, T), write(T), nl
@@ -51,6 +53,17 @@ procura_solucao(N, L) :- % Procura solução para o predicado geral quando falha
    write('Representação em Tabuleiro:'), nl,
    tabuleiro(L, N),
    write('Representação em Lista:').
+
+procura_10() :- % Procura solução para o predicado geral quando falha, utilizando a abordagem CLP(FD)
+ length(L, 10),
+  L ins 1..10, %domain(L, 1, N),
+  salvo(L),
+  labeling([], L),
+  nl,
+  write('Representação em Tabuleiro:'), nl,
+  tabuleiro(L, 10),
+  write('Representação em Lista:'), nl,
+  write('Rainhas = '), write(L).
 
 salvo([]).
 salvo([X|Xs]) :-
